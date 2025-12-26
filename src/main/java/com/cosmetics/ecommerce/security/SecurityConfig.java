@@ -1,7 +1,5 @@
 package com.cosmetics.ecommerce.security;
 
-
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,19 +38,22 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public endpoints - MUST BE FIRST
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/register",
+                                "/api/auth/login",
                                 "/api/products/**",
                                 "/api/categories/**",
-                                "/api/brands/**"
+                                "/api/brands/**",
+                                "/error"
                         ).permitAll()
 
                         // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // User endpoints (both USER and ADMIN)
-                        .requestMatchers("/api/user/**", "/api/orders/**").authenticated()
+                        // Authenticated endpoints
+                        .requestMatchers("/api/auth/**").authenticated()
+                        .requestMatchers("/api/orders/**").authenticated()
 
                         // All other requests must be authenticated
                         .anyRequest().authenticated()
