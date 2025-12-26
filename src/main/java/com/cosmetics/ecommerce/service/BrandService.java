@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-class BrandService {
+public class BrandService {
 
     private final BrandRepository brandRepository;
     private final ModelMapper modelMapper;

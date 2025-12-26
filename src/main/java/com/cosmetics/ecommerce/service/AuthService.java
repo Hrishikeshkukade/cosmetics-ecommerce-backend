@@ -1,24 +1,29 @@
 package com.cosmetics.ecommerce.service;
 
-import com.cosmetics.ecommerce.dto.AuthResponse;
-import com.cosmetics.ecommerce.dto.LoginRequest;
-import com.cosmetics.ecommerce.dto.RegisterRequest;
+import com.cosmetics.ecommerce.dto.*;
 import com.cosmetics.ecommerce.entity.User;
 import com.cosmetics.ecommerce.repository.UserRepository;
 import com.cosmetics.ecommerce.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
 
     // Register new user
     public AuthResponse register(RegisterRequest request) {
@@ -41,16 +46,25 @@ public class AuthService {
         user.setLastName(request.getLastName());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(User.Role.CUSTOMER);
+        user.setIsActive(true);
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user);
-        return new AuthResponse(token, user.getId(), user.getUsername(),
-                user.getEmail(), user.getRole().name());
+        // Generate JWT token
+        String token = jwtUtil.generateToken(savedUser);
+
+        return new AuthResponse(
+                token,
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getEmail(),
+                savedUser.getRole().name()
+        );
     }
 
     // Login user
     public AuthResponse login(LoginRequest request) {
+        // Authenticate user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -58,11 +72,64 @@ public class AuthService {
                 )
         );
 
+        // Get user details
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Generate JWT token
         String token = jwtUtil.generateToken(user);
-        return new AuthResponse(token, user.getId(), user.getUsername(),
-                user.getEmail(), user.getRole().name());
+
+        return new AuthResponse(
+                token,
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+    }
+
+    // Get current user profile
+    public UserDTO getCurrentUserProfile() {
+        User user = getCurrentUser();
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    // Update user profile
+    public UserDTO updateProfile(UpdateProfileRequest request) {
+        User user = getCurrentUser();
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setAddress(request.getAddress());
+        user.setCity(request.getCity());
+        user.setState(request.getState());
+        user.setZipCode(request.getZipCode());
+        user.setCountry(request.getCountry());
+
+        User updatedUser = userRepository.save(user);
+        return modelMapper.map(updatedUser, UserDTO.class);
+    }
+
+    // Change password
+    public void changePassword(ChangePasswordRequest request) {
+        User user = getCurrentUser();
+
+        // Verify current password
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    // Helper: Get current authenticated user
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
