@@ -28,6 +28,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final ModelMapper modelMapper;
+    private final EmailService emailService;
 
     // Get all products with pagination
     public Page<ProductDTO> getAllProducts(Pageable pageable) {
@@ -173,6 +174,11 @@ public class ProductService {
         }
 
         Product updatedProduct = productRepository.save(product);
+
+        if (product.getStockQuantity() < 10) {
+            emailService.sendLowStockAlert(product.getName(), product.getStockQuantity());
+        }
+
         return convertToDTO(updatedProduct);
     }
 

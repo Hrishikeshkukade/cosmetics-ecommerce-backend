@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 40px 20px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .status-badge { display: inline-block; padding: 10px 20px; background: #ec4899; color: white; border-radius: 20px; margin: 20px 0; }
+        .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📦 Order Status Update</h1>
+    </div>
+    <div class="content">
+        <h2>Hello <span th:text="${name}">Customer</span>!</h2>
+        <p>Your order <strong th:text="${orderNumber}">ORD123</strong> has been updated.</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <p>Previous Status: <strong th:text="${previousStatus}">Status</strong></p>
+            <p style="font-size: 24px;">⬇️</p>
+            <div class="status-badge">
+                <span th:text="${status}">New Status</span>
+            </div>
+        </div>
+
+        <p>You can track your order anytime by logging into your account.</p>
+    </div>
+    <div class="footer">
+        <p>© 2025 GlowBeauty. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

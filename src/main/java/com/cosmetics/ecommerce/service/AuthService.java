@@ -24,6 +24,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final ModelMapper modelMapper;
+    private final EmailService emailService;
 
     // Register new user
     public AuthResponse register(RegisterRequest request) {
@@ -49,6 +50,8 @@ public class AuthService {
         user.setIsActive(true);
 
         User savedUser = userRepository.save(user);
+
+        emailService.sendWelcomeEmail(savedUser);
 
         // Generate JWT token
         String token = jwtUtil.generateToken(savedUser);

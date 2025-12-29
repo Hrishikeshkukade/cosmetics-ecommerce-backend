@@ -29,6 +29,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     // Create new order
     public OrderDTO createOrder(CreateOrderRequest request) {
@@ -88,6 +89,9 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
 
         Order savedOrder = orderRepository.save(order);
+
+        emailService.sendOrderConfirmationEmail(user, savedOrder);
+
         return convertToDTO(savedOrder);
     }
 
@@ -141,21 +145,41 @@ public class OrderService {
     }
 
     // Update order status (Admin only)
-    public OrderDTO updateOrderStatus(Long id, Order.OrderStatus status) {
+    public OrderDTO updateOrderStatus(Long id, Order.OrderStatus newStatus) {
+
+        // Admin performing the action
+        User admin = getCurrentUser();
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
 
-        order.setStatus(status);
+        // 1️⃣ Store previous status BEFORE updating
+        Order.OrderStatus previousStatus = order.getStatus();
 
-        // If order is delivered, mark payment as paid (for COD)
-        if (status == Order.OrderStatus.DELIVERED &&
+        // 2️⃣ Update order status
+        order.setStatus(newStatus);
+
+        // 3️⃣ If order is delivered, mark payment as paid (COD)
+        if (newStatus == Order.OrderStatus.DELIVERED &&
                 order.getPaymentMethod() == Order.PaymentMethod.CASH_ON_DELIVERY) {
             order.setPaymentStatus(Order.PaymentStatus.PAID);
         }
 
+        // 4️⃣ Save order
         Order updatedOrder = orderRepository.save(order);
+
+        // 5️⃣ Send email to CUSTOMER (not admin)
+        User customer = order.getUser();
+
+        emailService.sendOrderStatusUpdateEmail(
+                customer,
+                updatedOrder,
+                previousStatus.name()
+        );
+
         return convertToDTO(updatedOrder);
     }
+
 
     // Cancel order
     public OrderDTO cancelOrder(Long id) {

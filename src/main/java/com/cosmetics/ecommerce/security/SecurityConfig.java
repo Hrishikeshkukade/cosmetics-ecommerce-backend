@@ -46,14 +46,22 @@ public class SecurityConfig {
                                 "/api/categories/**",
                                 "/api/brands/**",
                                 "/error"
+
                         ).permitAll()
 
                         // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // Authenticated endpoints
-                        .requestMatchers("/api/auth/**").authenticated()
-                        .requestMatchers("/api/orders/**").authenticated()
+                        // Chat endpoints - authenticated users
+                        .requestMatchers("/api/chat/room", "/api/chat/room/*/messages", "/api/chat/send").authenticated()
+
+                        // Admin chat endpoints
+                        .requestMatchers("/api/chat/rooms").hasRole("ADMIN")  // ADD THIS
+
+                        // WebSocket
+                        .requestMatchers("/ws/**").permitAll()
+                        // WebSocket endpoint
 
                         // All other requests must be authenticated
                         .anyRequest().authenticated()
