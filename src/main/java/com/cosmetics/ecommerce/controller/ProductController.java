@@ -1,6 +1,7 @@
 package com.cosmetics.ecommerce.controller;
 
 import com.cosmetics.ecommerce.dto.ProductDTO;
+import com.cosmetics.ecommerce.dto.ProductRequest;
 import com.cosmetics.ecommerce.dto.ProductSearchRequest;
 import com.cosmetics.ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,13 @@ import java.util.List;
 class ProductController {
 
     private final ProductService productService;
+
+//    @PostMapping
+//    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductRequest request) {
+//        ProductDTO createdProduct = productService.createProduct(request);
+//        return ResponseEntity.ok(createdProduct);
+//    }
+
 
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> getAllProducts(

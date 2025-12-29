@@ -2,10 +2,8 @@ package com.cosmetics.ecommerce.controller;
 
 import com.cosmetics.ecommerce.dto.*;
 import com.cosmetics.ecommerce.entity.Order;
-import com.cosmetics.ecommerce.service.BrandService;
-import com.cosmetics.ecommerce.service.CategoryService;
-import com.cosmetics.ecommerce.service.OrderService;
-import com.cosmetics.ecommerce.service.ProductService;
+import com.cosmetics.ecommerce.service.*;
+import com.cosmetics.ecommerce.service.AnalyticsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -29,7 +28,7 @@ class AdminController {
     private final CategoryService categoryService;
     private final BrandService brandService;
     private final OrderService orderService;
-
+    private final AnalyticsService analyticsService;
 
     @PostMapping("/products")
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductRequest request) {
@@ -147,4 +146,69 @@ class AdminController {
     public ResponseEntity<OrderStatsDTO> getOrderStatistics() {
         return ResponseEntity.ok(orderService.getOrderStatistics());
     }
-}
+
+    @GetMapping("/analytics/sales-trend")
+        public ResponseEntity<Map<String, Object>> getSalesTrend(
+                @RequestParam(defaultValue = "30") int days
+        ) {
+            return ResponseEntity.ok(analyticsService.getSalesTrend(days));
+        }
+
+
+        @GetMapping("/analytics/top-products")
+        public ResponseEntity<List<Map<String, Object>>> getTopProducts(
+                @RequestParam(defaultValue = "10") int limit
+        ) {
+            return ResponseEntity.ok(analyticsService.getTopProducts(limit));
+        }
+
+        /**
+         * Get sales distribution by category
+         */
+        @GetMapping("/analytics/category-distribution")
+        public ResponseEntity<Map<String, Integer>> getCategoryDistribution() {
+            return ResponseEntity.ok(analyticsService.getCategoryDistribution());
+        }
+
+        /**
+         * Get revenue summary for different time periods
+         */
+        @GetMapping("/analytics/revenue-summary")
+        public ResponseEntity<Map<String, Object>> getRevenueSummary() {
+            return ResponseEntity.ok(analyticsService.getRevenueSummary());
+        }
+
+        /**
+         * Get brand performance data
+         */
+        @GetMapping("/analytics/brand-performance")
+        public ResponseEntity<Map<String, Object>> getBrandPerformance() {
+            return ResponseEntity.ok(analyticsService.getBrandPerformance());
+        }
+
+        /**
+         * Get comprehensive dashboard statistics
+         */
+        @GetMapping("/analytics/dashboard-stats")
+        public ResponseEntity<Map<String, Object>> getDashboardStats() {
+            return ResponseEntity.ok(analyticsService.getDashboardStats());
+        }
+
+        /**
+         * Get order status distribution
+         */
+        @GetMapping("/analytics/order-status-distribution")
+        public ResponseEntity<Map<String, Long>> getOrderStatusDistribution() {
+            return ResponseEntity.ok(analyticsService.getOrderStatusDistribution());
+        }
+
+        /**
+         * Get monthly sales comparison
+         */
+        @GetMapping("/analytics/monthly-comparison")
+        public ResponseEntity<Map<String, Object>> getMonthlySalesComparison(
+                @RequestParam(defaultValue = "6") int months
+        ) {
+            return ResponseEntity.ok(analyticsService.getMonthlySalesComparison(months));
+        }
+    }
