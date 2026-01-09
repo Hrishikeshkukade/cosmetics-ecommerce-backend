@@ -48,6 +48,21 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean isActive = true;
 
+    // NEW FIELDS FOR APPROVAL SYSTEM
+    @Column(nullable = false)
+    private Boolean approved = false;  // Default: not approved
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus = AccountStatus.PENDING;  // PENDING, APPROVED, REJECTED
+
+    private LocalDateTime approvedAt;
+
+    private Long approvedBy;  // Admin user ID who approved
+
+    @Column(length = 500)
+    private String rejectionReason;  // Reason if rejected
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -64,12 +79,28 @@ public class User implements UserDetails {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+
+        if (role == Role.ADMIN) {
+            approved = true;
+            accountStatus = AccountStatus.APPROVED;
+            approvedAt = LocalDateTime.now();
+        }
+
     }
 
     @PreUpdate
     protected void onUpdate() {
+
         updatedAt = LocalDateTime.now();
+
+        if (role == Role.ADMIN && !approved) {
+            approved = true;
+            accountStatus = AccountStatus.APPROVED;
+            approvedAt = LocalDateTime.now();
+        }
     }
+
+
 
     // UserDetails implementation
     @Override
@@ -94,7 +125,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return isActive;
+        return isActive && approved;  // Account locked if not approved
     }
 
     @Override
@@ -104,7 +135,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isActive;
+        return isActive && approved;  // Only enabled if active AND approved
     }
 
     // Role enum
@@ -112,4 +143,13 @@ public class User implements UserDetails {
         CUSTOMER,
         ADMIN
     }
+
+    // AccountStatus enum
+    public enum AccountStatus {
+        PENDING,    // Waiting for admin approval
+        APPROVED,   // Approved by admin
+        REJECTED    // Rejected by admin
+    }
+
+
 }

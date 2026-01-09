@@ -153,22 +153,22 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
 
-        // 1️⃣ Store previous status BEFORE updating
+        //  Store previous status BEFORE updating
         Order.OrderStatus previousStatus = order.getStatus();
 
-        // 2️⃣ Update order status
+        //  Update order status
         order.setStatus(newStatus);
 
-        // 3️⃣ If order is delivered, mark payment as paid (COD)
+        // If order is delivered, mark payment as paid (COD)
         if (newStatus == Order.OrderStatus.DELIVERED &&
                 order.getPaymentMethod() == Order.PaymentMethod.CASH_ON_DELIVERY) {
             order.setPaymentStatus(Order.PaymentStatus.PAID);
         }
 
-        // 4️⃣ Save order
+        //  Save order
         Order updatedOrder = orderRepository.save(order);
 
-        // 5️⃣ Send email to CUSTOMER (not admin)
+        //  Send email to CUSTOMER (not admin)
         User customer = order.getUser();
 
         emailService.sendOrderStatusUpdateEmail(
@@ -178,6 +178,21 @@ public class OrderService {
         );
 
         return convertToDTO(updatedOrder);
+    }
+
+    // For Chatbot)
+    public List<OrderDTO> getUserOrdersList(Long userId) {
+        User currentUser = getCurrentUser();
+
+        // Check if requesting own orders or admin
+        if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(User.Role.ADMIN)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
 

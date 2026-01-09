@@ -31,6 +31,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    private final UserApprovalFilter userApprovalFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -54,10 +55,13 @@ public class SecurityConfig {
 
                         // Authenticated endpoints
                         // Chat endpoints - authenticated users
-                        .requestMatchers("/api/chat/room", "/api/chat/room/*/messages", "/api/chat/send").authenticated()
+//                        .requestMatchers("/api/chat/room", "/api/chat/room/*/messages", "/api/chat/send").authenticated()
+                                // Order endpoints - REQUIRE AUTHENTICATION
+                                .requestMatchers("/api/orders/**", "/api/cart/**").authenticated()
+
 
                         // Admin chat endpoints
-                        .requestMatchers("/api/chat/rooms").hasRole("ADMIN")  // ADD THIS
+//                        .requestMatchers("/api/chat/rooms").hasRole("ADMIN")  // ADD THIS
 
                         // WebSocket
                         .requestMatchers("/ws/**").permitAll()
@@ -70,8 +74,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(userApprovalFilter, JwtAuthenticationFilter.class);
         return http.build();
     }
 

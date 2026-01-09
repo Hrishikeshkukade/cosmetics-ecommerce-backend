@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,4 +24,11 @@ public class UserDTO {
     private String state;
     private String zipCode;
     private String country;
+
+    // NEW: Approval fields
+    private Boolean approved;
+    private String accountStatus;
+    private LocalDateTime approvedAt;
+    private String rejectionReason;
+    private LocalDateTime createdAt;
 }

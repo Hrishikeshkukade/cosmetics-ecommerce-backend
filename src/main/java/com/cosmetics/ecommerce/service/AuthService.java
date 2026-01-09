@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -38,7 +40,7 @@ public class AuthService {
             throw new RuntimeException("Email already exists");
         }
 
-        // Create new user
+        // Create new user with PENDING status
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -49,24 +51,48 @@ public class AuthService {
         user.setRole(User.Role.CUSTOMER);
         user.setIsActive(true);
 
+        // NEW: Set approval fields
+        user.setApproved(false);  // Not approved yet
+        user.setAccountStatus(User.AccountStatus.PENDING);  // Pending approval
+
         User savedUser = userRepository.save(user);
 
-        emailService.sendWelcomeEmail(savedUser);
+        // Send pending approval email to user
+        emailService.sendAccountPendingEmail(savedUser);
 
-        // Generate JWT token
-        String token = jwtUtil.generateToken(savedUser);
+        // Send notification to admin
+        emailService.sendNewRegistrationNotificationToAdmin(savedUser);
 
+        // Return response WITHOUT token (user can't login yet)
         return new AuthResponse(
-                token,
+                null,  // No token
                 savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.getEmail(),
-                savedUser.getRole().name()
+                savedUser.getRole().name(),
+                "Registration successful! Your account is pending admin approval. You will receive an email once approved.",
+                true  // approvalRequired
         );
     }
 
     // Login user
     public AuthResponse login(LoginRequest request) {
+
+
+        // Find user first to check approval status
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        // Check if account is approved
+        if (!user.getApproved() || user.getAccountStatus() != User.AccountStatus.APPROVED) {
+            if (user.getAccountStatus() == User.AccountStatus.REJECTED) {
+                String reason = user.getRejectionReason() != null ? user.getRejectionReason() : "No reason provided";
+                throw new RuntimeException("Your account has been rejected. Reason: " + reason);
+            } else {
+                throw new RuntimeException("Your account is pending admin approval. Please check your email for updates.");
+            }
+        }
+
         // Authenticate user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -74,10 +100,6 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-
-        // Get user details
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Generate JWT token
         String token = jwtUtil.generateToken(user);
@@ -87,7 +109,9 @@ public class AuthService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole().name()
+                user.getRole().name(),
+                "Login successful",
+                false  // approvalRequired
         );
     }
 

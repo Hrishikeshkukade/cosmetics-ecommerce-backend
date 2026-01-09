@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .icon { font-size: 50px; margin-bottom: 10px; }
+        .content { padding: 40px 30px; color: #333; }
+        .alert-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .alert-box h3 { margin-top: 0; color: #d97706; }
+        .user-info { background: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .user-info table { width: 100%; border-collapse: collapse; }
+        .user-info td { padding: 10px 5px; border-bottom: 1px solid #e5e5e5; }
+        .user-info td:first-child { font-weight: bold; color: #555; width: 40%; }
+        .btn { display: inline-block; padding: 15px 30px; background: #8b5cf6; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; font-weight: bold; }
+        .btn-approve { background: #10b981; }
+        .btn-reject { background: #ef4444; }
+        .actions { text-align: center; margin: 30px 0; }
+        .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="icon">🔔</div>
+        <h1>New User Registration Alert</h1>
+    </div>
+    <div class="content">
+        <h2>Hello Admin,</h2>
+
+        <div class="alert-box">
+            <h3>⚠️ Action Required</h3>
+            <p>A new user has registered and is waiting for approval.</p>
+        </div>
+
+        <div class="user-info">
+            <h3 style="margin-top: 0; color: #333;">User Details:</h3>
+            <table>
+                <tr>
+                    <td>Username:</td>
+                    <td th:text="${username}">username</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td th:text="${email}">email@example.com</td>
+                </tr>
+                <tr>
+                    <td>Full Name:</td>
+                    <td th:text="${fullName}">Full Name</td>
+                </tr>
+                <tr>
+                    <td>Phone:</td>
+                    <td th:text="${phone}">+91-1234567890</td>
+                </tr>
+                <tr>
+                    <td>Registration Date:</td>
+                    <td th:text="${#temporals.format(registrationDate, 'dd MMM yyyy, hh:mm a')}">Date</td>
+                </tr>
+                <tr>
+                    <td>User ID:</td>
+                    <td th:text="${userId}">#123</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="actions">
+            <p style="margin-bottom: 20px; color: #555;">Please review and take action:</p>
+            <a th:href="${adminPanelUrl}" class="btn">Go to Admin Panel</a>
+        </div>
+
+        <div style="background: #e0e7ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 0; font-size: 14px; color: #4338ca;">
+                <strong>💡 Tip:</strong> Review the user's details and verify their information before approving. This helps maintain the quality and security of our platform.
+            </p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2025 GlowBeauty Admin System. All rights reserved.</p>
+        <p>This is an automated admin notification.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 40px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; }
+    .icon { font-size: 60px; margin-bottom: 10px; }
+    .content { padding: 40px 30px; color: #333; }
+    .content h2 { color: #333; margin-top: 0; }
+    .rejection-box { background: #fee2e2; border-left: 4px solid #ef4444; padding: 20px; margin: 20px 0; border-radius: 5px; }
+    .rejection-box h3 { margin-top: 0; color: #dc2626; }
+    .reason-box { background: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0; border: 1px solid #e5e5e5; }
+    .contact-box { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0; border-radius: 5px; }
+    .btn { display: inline-block; padding: 12px 30px; background: #3b82f6; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="icon">❌</div>
+    <h1>Account Registration Update</h1>
+  </div>
+  <div class="content">
+    <h2>Dear <span th:text="${name}">Customer</span>,</h2>
+    <p>Thank you for your interest in GlowBeauty.</p>
+
+    <div class="rejection-box">
+      <h3>Registration Status</h3>
+      <p>We regret to inform you that we are unable to approve your account registration at this time.</p>
+    </div>
+
+    <div class="reason-box" th:if="${reason != null and reason != ''}">
+      <h4 style="margin-top: 0; color: #555;">Reason:</h4>
+      <p style="margin: 0; color: #666;" th:text="${reason}">Reason for rejection</p>
+    </div>
+
+    <div class="contact-box">
+      <h4 style="margin-top: 0; color: #1e40af;">📞 Need Help or Want to Reapply?</h4>
+      <p style="margin: 10px 0;">If you have any questions or would like to reapply, please contact our support team. We're here to help!</p>
+      <p style="margin: 10px 0;">
+        <strong>Email:</strong> support@glowbeauty.com<br>
+        <strong>Phone:</strong> +91-1234567890<br>
+        <strong>Hours:</strong> Mon-Sat, 9 AM - 9 PM IST
+      </p>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="mailto:support@glowbeauty.com" class="btn">Contact Support</a>
+    </div>
+
+    <p style="margin-top: 30px; color: #666; font-size: 14px;">
+      We appreciate your understanding and hope to serve you in the future.
+    </p>
+  </div>
+  <div class="footer">
+    <p>© 2025 GlowBeauty. All rights reserved.</p>
+    <p>This is an automated email. Please do not reply.</p>
+  </div>
+</div>
+</body>
+</html>
