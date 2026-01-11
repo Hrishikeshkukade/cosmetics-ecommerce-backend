@@ -1,0 +1,218 @@
+
+spring:
+  application:
+    name: cosmetics-ecommerce
+  
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hrishikeshkukade6@gmail.com
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+# Server Configuration
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: 86400000
+
+# Application Email
+app:
+  email:
+    from: noreply@shreesamarthdistributors.com
+    support: support@shreesamarthdistributors.com
+
+# CORS Configuration
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.cosmetics: DEBUG
+    org.springframework.security: DEBUG
+
+# ===================================================================
+# Profile: local (Default Development Environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/cosmetics_ecommerce?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: hrishikesh
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # Auto-update schema
+    show-sql: true
+
+server:
+  port: 8083
+
+logging:
+  level:
+    root: INFO
+    com.cosmetics: DEBUG
+    org.springframework.security: DEBUG
+
+# ===================================================================
+# Profile: dev (Shared Development Environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/cosmetics_dev?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: hrishikesh
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8083
+
+logging:
+  level:
+    root: INFO
+    com.cosmetics: DEBUG
+
+# ===================================================================
+# Profile: test (Testing Environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/cosmetics_test?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: hrishikesh
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Drop and recreate tables on each test run
+    show-sql: true
+
+server:
+  port: 8084
+
+logging:
+  level:
+    root: WARN
+    com.cosmetics: DEBUG
+
+# ===================================================================
+# Profile: staging (Pre-Production Environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/cosmetics_staging?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:hrishikesh}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Only validate schema, don't modify
+    show-sql: false
+
+server:
+  port: 8085
+
+logging:
+  level:
+    root: WARN
+    com.cosmetics: INFO
+    org.springframework.security: INFO
+
+# ===================================================================
+# Profile: prod (Production Environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:cosmetics_prod}?useSSL=true&requireSSL=true&serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+        format_sql: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,application/javascript,application/json
+  http2:
+    enabled: true
+
+logging:
+  level:
+    root: WARN
+    com.cosmetics: INFO
+    org.springframework.security: WARN
+  file:
+    name: logs/cosmetics-ecommerce.log
+    max-size: 10MB
+    max-history: 30

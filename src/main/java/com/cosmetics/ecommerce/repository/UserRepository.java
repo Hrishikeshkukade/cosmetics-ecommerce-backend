@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // NEW: Methods for approval system
     List<User> findByAccountStatus(User.AccountStatus status);
     Long countByAccountStatus(User.AccountStatus status);
+
+    Long countByRole(User.Role role);
 }
