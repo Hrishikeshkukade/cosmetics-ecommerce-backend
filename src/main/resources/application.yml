@@ -216,3 +216,31 @@ logging:
     name: logs/cosmetics-ecommerce.log
     max-size: 10MB
     max-history: 30
+
+# ===================================================================
+# Profile: railway (Railway Deployment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: railway
+
+  datasource:
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useSSL=true&requireSSL=true&serverTimezone=UTC
+    username: ${MYSQLUSER}
+    password: ${MYSQLPASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # First deployment, then change to 'validate'
+    show-sql: false
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    root: INFO
+    com.cosmetics: INFO
