@@ -181,7 +181,7 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:cosmetics_prod}?useSSL=true&requireSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/cosmetics_prod?useSSL=true&requireSSL=true&serverTimezone=UTC
     username: root
     password: hrishikesh
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -192,7 +192,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
