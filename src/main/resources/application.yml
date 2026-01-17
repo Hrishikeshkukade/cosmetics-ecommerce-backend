@@ -227,9 +227,9 @@ spring:
       on-profile: railway
 
   datasource:
-    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useSSL=true&requireSSL=true&serverTimezone=UTC
-    username: ${MYSQLUSER}
-    password: ${MYSQLPASSWORD}
+    url: jdbc:mysql://localhost:3306/cosmetics_prod?useSSL=true&requireSSL=true&serverTimezone=UTC
+    username: root
+    password: hrishikesh
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
