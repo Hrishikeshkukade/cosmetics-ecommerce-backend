@@ -47,8 +47,11 @@ app:
     support: support@shreesamarthdistributors.com
 
 # CORS Configuration
+
 cors:
-  allowed-origins: http://localhost:3000,http://localhost:5173
+  allowed-origins: http://localhost:3000,http://localhost:5173,${CORS_ALLOWED_ORIGINS:}
+
+
 
 # Logging Configuration
 logging:
