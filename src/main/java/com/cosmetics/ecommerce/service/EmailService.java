@@ -176,9 +176,9 @@ public class EmailService {
                     htmlContent
             );
 
-            System.out.println("✅ Pending email sent successfully!");
+            System.out.println(" Pending email sent successfully!");
         } catch (Exception e) {
-            System.err.println("❌ Failed to send account pending email: " + e.getMessage());
+            System.err.println(" Failed to send account pending email: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -211,10 +211,10 @@ public class EmailService {
                         htmlContent
                 );
 
-                System.out.println("✅ Admin notification sent to: " + admin.getEmail());
+                System.out.println(" Admin notification sent to: " + admin.getEmail());
             }
         } catch (Exception e) {
-            System.err.println("❌ Failed to send admin notification email: " + e.getMessage());
+            System.err.println(" Failed to send admin notification email: " + e.getMessage());
             e.printStackTrace();
         }
     }

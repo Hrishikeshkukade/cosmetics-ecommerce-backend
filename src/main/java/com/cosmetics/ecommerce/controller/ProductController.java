@@ -67,6 +67,9 @@ class ProductController {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryId, pageable));
     }
 
+
+
+
     @GetMapping("/brand/{brandId}")
     public ResponseEntity<Page<ProductDTO>> getProductsByBrand(
             @PathVariable Long brandId,

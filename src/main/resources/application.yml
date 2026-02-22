@@ -218,7 +218,7 @@ logging:
     max-history: 30
 
 # ===================================================================
-# Profile: railway (Railway Deployment)
+# Profile: railway (Render deployment with Railway MySQL)
 # ===================================================================
 ---
 spring:
@@ -227,18 +227,18 @@ spring:
       on-profile: railway
 
   datasource:
-    url: jdbc:mysql://localhost:3306/cosmetics_prod?useSSL=true&requireSSL=true&serverTimezone=UTC
-    username: root
-    password: hrishikesh
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useSSL=true&serverTimezone=UTC
+    username: ${MYSQLUSER}
+    password: ${MYSQLPASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update  # First deployment, then change to 'validate'
+      ddl-auto: update
     show-sql: false
 
 server:
-  port: ${PORT:8083}
+  port: ${PORT:8080}
 
 logging:
   level:

@@ -20,11 +20,7 @@ public class AnalyticsService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
-    /**
-     * Get sales trend data for specified number of days
-     * @param days Number of days to analyze
-     * @return Map containing dates and sales data
-     */
+
     public Map<String, Object> getSalesTrend(int days) {
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.minusDays(days);
@@ -99,10 +95,7 @@ public class AnalyticsService {
                 ));
     }
 
-    /**
-     * Get revenue summary for different time periods
-     * @return Map containing today, week, and month revenue
-     */
+
     public Map<String, Object> getRevenueSummary() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.withHour(0).withMinute(0).withSecond(0);
@@ -132,10 +125,7 @@ public class AnalyticsService {
         return summary;
     }
 
-    /**
-     * Get brand performance data
-     * @return Map of brand names to sales information
-     */
+
     public Map<String, Object> getBrandPerformance() {
         List<Product> products = productRepository.findAll();
 
